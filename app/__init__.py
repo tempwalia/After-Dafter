@@ -1,6 +1,8 @@
 """Flask app factory and configuration."""
 import os
 import secrets
+import subprocess
+import sys
 from flask import Flask
 from flask_login import LoginManager, UserMixin
 
@@ -34,6 +36,22 @@ def create_app():
     # Ensure notebooks directory exists for notebook templates
     notebooks_dir = os.path.join(os.getcwd(), 'notebooks')
     os.makedirs(notebooks_dir, exist_ok=True)
+
+    # Seed sample data on first run (especially for Render) if missing
+    sample_csv = os.path.join(app.config['UPLOAD_FOLDER'], 'synthetic_callcenter_accounts.csv')
+    if not os.path.exists(sample_csv):
+        try:
+            setup_script = os.path.join(os.getcwd(), 'scripts', 'setup_sample_data.py')
+            if os.path.exists(setup_script):
+                subprocess.run([sys.executable, setup_script], check=True)
+        except Exception as e:
+            # Non-fatal: app can still run; logs will help diagnose
+            try:
+                os.makedirs(app.config['LOGS_DIR'], exist_ok=True)
+                with open(os.path.join(app.config['LOGS_DIR'], 'startup.log'), 'a') as lf:
+                    lf.write(f"Failed to seed sample data: {e}\n")
+            except Exception:
+                pass
 
     # Setup Flask-Login
     login_manager = LoginManager()

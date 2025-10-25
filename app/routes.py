@@ -121,7 +121,14 @@ def index():
                         continue
     execution_logs = sorted(execution_logs, key=lambda x: x['timestamp'], reverse=True)[:5]  # Show last 5 executions
     
-    return render_template('index.html', reports=reports, scripts=scripts, execution_logs=execution_logs, notebooks=notebook_templates)
+    return render_template(
+        'index.html',
+        reports=reports,
+        scripts=scripts,
+        execution_logs=execution_logs,
+        notebooks=notebook_templates,
+        default_data=DEFAULT_DATA,
+    )
 
 @main_bp.route('/execute-scripts', methods=['POST'])
 @login_required
