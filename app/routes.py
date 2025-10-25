@@ -48,21 +48,9 @@ def logout():
 @main_bp.route('/')
 @login_required
 def index():
-    # Get list of available reports with descriptions
+    # Get list of available report HTML files (simple filename list)
     reports_path = os.path.join(current_app.config['ML_MODELS_DIR'], '*.html')
-    reports = []
-    for file in glob.glob(reports_path):
-        filename = os.path.basename(file)
-        # Extract report type and description
-        report_type = 'KMeans Clustering' if 'kmeans' in filename.lower() else 'XGBoost Prediction'
-        description = f"Interactive {report_type} report with visualizations and metrics"
-        
-        reports.append({
-            'name': filename,
-            'date': datetime.datetime.fromtimestamp(os.path.getctime(file)).strftime('%Y-%m-%d %H:%M:%S'),
-            'url': url_for('main.view_report', filename=filename),
-            'description': description
-        })
+    model_files = sorted([os.path.basename(p) for p in glob.glob(reports_path)], reverse=True)
     
     # Get list of executable scripts with last run time
     # Use the actual scripts directory in the repo
@@ -123,7 +111,7 @@ def index():
     
     return render_template(
         'index.html',
-        reports=reports,
+        model_files=model_files,
         scripts=scripts,
         execution_logs=execution_logs,
         notebooks=notebook_templates,

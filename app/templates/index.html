@@ -71,19 +71,18 @@
                     <h5 class="mb-0">ML Model Reports</h5>
                 </div>
                 <div class="card-body">
-                    <div class="list-group">
-                        {% for report in reports %}
-                        <a href="{{ url_for('main.view_report', filename=report.name) }}"
-                           class="list-group-item list-group-item-action">
-                            <div class="d-flex w-100 justify-content-between">
-                                <h6 class="mb-1">{{ report.name }}</h6>
-                                <small>{{ report.date }}</small>
-                            </div>
-                            <p class="mb-1">{{ report.description }}</p>
-                            <small class="text-muted">Click to view full report</small>
-                        </a>
-                        {% endfor %}
-                    </div>
+                    {% if model_files and model_files|length > 0 %}
+                        <div class="list-group">
+                            {% for filename in model_files %}
+                            <a href="{{ url_for('main.view_report', filename=filename) }}"
+                               class="list-group-item list-group-item-action">
+                                {{ filename }}
+                            </a>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <p class="mb-0 text-muted">No reports yet. Generate one from the actions or notebook templates.</p>
+                    {% endif %}
                 </div>
             </div>
 
