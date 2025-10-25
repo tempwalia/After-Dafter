@@ -11,6 +11,8 @@ ENV/
 # Local development
 *.sqlite
 *.db
+.env
+.env.*
 
 # Jupyter Notebook
 .ipynb_checkpoints
