@@ -1,16 +1,8 @@
-# app/__init__.py
+"""Flask app factory and configuration."""
 import os
+import secrets
 from flask import Flask
 from flask_login import LoginManager, UserMixin
-import secrets
-import os
-from flask import Flask
-
-def create_app():
-    app = Flask(__name__, template_folder="templates", static_folder="static")
-    app.config['SECRET_KEY'] = os.getenv("SECRET_KEY", "devkey")
-    app.config['UPLOAD_FOLDER'] = os.path.join(os.getcwd(), 'data')
-    app.config['ML_MODELS_DIR'] = os.path.join(os.getcwd(), 'ml_models')
 
 
 class User(UserMixin):
@@ -20,16 +12,23 @@ class User(UserMixin):
         self.password = password
         self.role = role
 
+
 def create_app():
     app = Flask(__name__, template_folder="templates", static_folder="static")
-    app.config['SECRET_KEY'] = secrets.token_hex(16)
+
+    # Config from environment with sane defaults
+    app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', secrets.token_hex(16))
     app.config['UPLOAD_FOLDER'] = os.path.join(os.getcwd(), 'data')
     app.config['ML_MODELS_DIR'] = os.path.join(os.getcwd(), 'ml_models')
     app.config['LOGS_DIR'] = os.path.join(os.getcwd(), 'logs')
-    
+
     # Create necessary directories
-    for dir_path in [app.config['UPLOAD_FOLDER'], app.config['ML_MODELS_DIR'], 
-                    app.config['LOGS_DIR'], os.path.join(app.static_folder, 'model_plots')]:
+    for dir_path in [
+        app.config['UPLOAD_FOLDER'],
+        app.config['ML_MODELS_DIR'],
+        app.config['LOGS_DIR'],
+        os.path.join(app.static_folder, 'model_plots'),
+    ]:
         os.makedirs(dir_path, exist_ok=True)
 
     # Ensure notebooks directory exists for notebook templates
@@ -41,10 +40,15 @@ def create_app():
     login_manager.init_app(app)
     login_manager.login_view = 'main.login'
 
-    # Create demo users (in production, use proper password hashing)
+    # Users from environment (for demo purposes; use hashing in production)
+    admin_user = os.getenv('ADMIN_USERNAME', 'admin')
+    admin_pass = os.getenv('ADMIN_PASSWORD', 'admin123')
+    demo_user = os.getenv('DEMO_USERNAME', 'demo')
+    demo_pass = os.getenv('DEMO_PASSWORD', 'demo123')
+
     users = {
-        'demo': User('1', 'demo', 'demo123', 'viewer'),
-        'admin': User('2', 'admin', 'admin123', 'admin')
+        'demo': User('1', demo_user, demo_pass, 'viewer'),
+        'admin': User('2', admin_user, admin_pass, 'admin'),
     }
 
     @login_manager.user_loader

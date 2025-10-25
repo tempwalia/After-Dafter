@@ -65,7 +65,8 @@ def index():
         })
     
     # Get list of executable scripts with last run time
-    scripts_path = os.path.join(os.getcwd(), 'tasks', 'script_executed', '*.py')
+    # Use the actual scripts directory in the repo
+    scripts_path = os.path.join(os.getcwd(), 'scripts', '*.py')
     scripts = []
     log_file = os.path.join(current_app.config['LOGS_DIR'], f'script_logs_{datetime.datetime.now().strftime("%Y%m%d")}.txt')
     
@@ -132,7 +133,8 @@ def execute_selected_scripts():
     
     results = []
     for script_name in selected_scripts:
-        script_path = os.path.join(os.getcwd(), 'tasks', 'script_executed', script_name)
+        # Execute scripts from the actual 'scripts' directory
+        script_path = os.path.join(os.getcwd(), 'scripts', script_name)
         if not os.path.exists(script_path):
             results.append({'script': script_name, 'status': 'error', 'message': 'Script not found'})
             continue
