@@ -29,4 +29,7 @@ data/*.csv
 synthetic_data/*.csv
 
 # Generated reports
-ml_models/*.html
+!ml_models/*.html
+# Keep a couple of demo reports for deployed portfolio
+!ml_models/kmeans_report.html
+!ml_models/xgboost_report.html
