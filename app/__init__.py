@@ -3,6 +3,15 @@ import os
 from flask import Flask
 from flask_login import LoginManager, UserMixin
 import secrets
+import os
+from flask import Flask
+
+def create_app():
+    app = Flask(__name__, template_folder="templates", static_folder="static")
+    app.config['SECRET_KEY'] = os.getenv("SECRET_KEY", "devkey")
+    app.config['UPLOAD_FOLDER'] = os.path.join(os.getcwd(), 'data')
+    app.config['ML_MODELS_DIR'] = os.path.join(os.getcwd(), 'ml_models')
+
 
 class User(UserMixin):
     def __init__(self, id, username, password, role):

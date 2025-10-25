@@ -1,16 +1,18 @@
-build:
-  steps:
-    - pip install -r requirements.txt
-    
 services:
   - type: web
-    name: ml-portfolio
+    name: After-Dafter
     env: python
-    buildCommand: pip install -r requirements.txt
-    startCommand: python run.py
-    autoDeploy: true
+    plan: free
+    buildCommand: "pip install -r requirements.txt"
+    startCommand: "gunicorn run:app"
     envVars:
-      - key: PYTHON_VERSION
-        value: 3.11.6
       - key: FLASK_ENV
         value: production
+      - key: PYTHON_VERSION
+        value: 3.11.6
+      - key: SECRET_KEY
+        generateValue: true   # Render will auto-generate if not set
+      - key: ADMIN_USERNAME
+        value: admin
+      - key: ADMIN_PASSWORD
+        generateValue: true
