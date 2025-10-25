@@ -1,0 +1,187 @@
+
+--- Executing: sample_query.py ---
+id	name	value
+1	Alice	10
+2	Bob	20
+3	Charlie	30
+4	David	40
+5	Eve	50
+6	Frank	60
+7	Grace	70
+8	Heidi	80
+9	Ivan	90
+10	Judy	100
+
+--- User: admin@example.com, Executing: sample_query.py ---
+id	name	value
+1	Alice	10
+2	Bob	20
+3	Charlie	30
+4	David	40
+5	Eve	50
+6	Frank	60
+7	Grace	70
+8	Heidi	80
+9	Ivan	90
+10	Judy	100
+
+--- User: admin@example.com, Executing: sample_query.py ---
+id	name	value
+1	Alice	10
+2	Bob	20
+3	Charlie	30
+4	David	40
+5	Eve	50
+6	Frank	60
+7	Grace	70
+8	Heidi	80
+9	Ivan	90
+10	Judy	100
+
+--- User: admin@example.com, Executing: sample_query.py ---
+id	name	value
+1	Alice	10
+2	Bob	20
+3	Charlie	30
+4	David	40
+5	Eve	50
+6	Frank	60
+7	Grace	70
+8	Heidi	80
+9	Ivan	90
+10	Judy	100
+
+--- User: admin@example.com, Executing: sample_query.py ---
+id	name	value
+1	Alice	10
+2	Bob	20
+3	Charlie	30
+4	David	40
+5	Eve	50
+6	Frank	60
+7	Grace	70
+8	Heidi	80
+9	Ivan	90
+10	Judy	100
+
+--- User: admin@example.com, Executed: sample_query.py, Date: 2025-07-26 21:02:50 ---
+
+--- User: admin@example.com, Executed: sample_query.py, Date: 2025-07-26 21:03:07 ---
+
+--- User: admin@example.com, Executed: sample_query.py, Date: 2025-07-26 21:03:23 ---
+
+--- User: admin@example.com, Executed: sample_query.py, Date: 2025-07-26 21:04:59 ---
+
+--- User: admin@example.com, Executed: sample_query.py, Date: 2025-07-26 21:05:16 ---
+
+--- User: admin@example.com, Executed: sample_query.py, Date: 2025-07-26 21:06:51 ---
+id	name	value
+1	Alice	10
+2	Bob	20
+3	Charlie	30
+4	David	40
+5	Eve	50
+6	Frank	60
+7	Grace	70
+8	Heidi	80
+9	Ivan	90
+10	Judy	100
+
+--- User: admin@example.com, Executed: sample_query.py, Date: 2025-07-26 21:08:41 ---
+id	name	value
+1	Alice	10
+2	Bob	20
+3	Charlie	30
+4	David	40
+5	Eve	50
+6	Frank	60
+7	Grace	70
+8	Heidi	80
+9	Ivan	90
+10	Judy	100
+
+--- User: admin@example.com, Executed: sample_query.py, Date: 2025-07-26 21:12:32 ---
+
+--- User: admin@example.com, Executed: sample_query.py, Date: 2025-07-26 21:12:38 ---
+
+--- User: admin@example.com, Executed: sample_query.py, Date: 2025-07-27 01:35:36 ---
+
+--- User: admin@example.com, Executed: sample_query.py, Date: 2025-07-27 01:38:32 ---
+
+--- User: admin@example.com, Executed: sample_query.py, Date: 2025-07-27 01:49:38 ---
+
+--- User: admin@example.com, Executed: sample_query.py, Date: 2025-07-27 01:51:22 ---
+
+--- User: admin@example.com, Executed: sample_query.py, Date: 2025-07-27 01:54:29 ---
+
+--- User: admin@example.com, Executed: sample_query.py, Date: 2025-07-27 01:55:53 ---
+
+--- User: admin@example.com, Executed: sample_query.py, Date: 2025-07-27 01:57:25 ---
+
+--- User: admin@example.com, Executed: sample_query.py, Date: 2025-07-27 01:58:54 ---
+id	name	value
+1	Alice	10
+2	Bob	20
+3	Charlie	30
+4	David	40
+5	Eve	50
+6	Frank	60
+7	Grace	70
+8	Heidi	80
+9	Ivan	90
+10	Judy	100
+
+--- User: admin@example.com, Executed: sample_query.py, Date: 2025-07-27 01:59:08 ---
+id	name	value
+1	Alice	10
+2	Bob	20
+3	Charlie	30
+4	David	40
+5	Eve	50
+6	Frank	60
+7	Grace	70
+8	Heidi	80
+9	Ivan	90
+10	Judy	100
+
+--- User: admin@example.com, Executed: sample_query.py, Date: 2025-07-27 02:00:59 ---
+
+--- User: admin@example.com, Executed: sample_query.py, Date: 2025-07-27 02:02:32 ---
+
+--- User: admin@example.com, Executed: sample_query.py, Date: 2025-07-27 02:04:00 ---
+
+--- User: admin@example.com, Executed: sample_query.py, Date: 2025-07-27 02:07:08 ---
+
+--- User: admin@example.com, Executed: sample_query.py, Date: 2025-07-27 02:09:22 ---
+
+--- User: admin@example.com, Executed: sample_query.py, Date: 2025-07-27 02:10:06 ---
+
+--- User: admin@example.com, Executed: sample_query.py, Date: 2025-07-27 02:10:14 ---
+
+--- User: admin@example.com, Executed: sample_query.py, Date: 2025-07-27 02:17:27 ---
+
+--- User: admin@example.com, Executed: sample_query.py, Date: 2025-07-27 02:18:48 ---
+
+--- User: admin@example.com, Executed: sample_query.py, Date: 2025-07-27 02:21:08 ---
+
+--- User: admin@example.com, Executed: sample_query.py, Date: 2025-07-27 02:21:46 ---
+
+--- User: admin@example.com, Executed: sample_query.py, Date: 2025-07-27 02:22:55 ---
+
+--- User: admin@example.com, Executed: sample_query.py, Date: 2025-07-27 02:28:07 ---
+
+--- User: admin@example.com, Executed: sample_query.py, Date: 2025-07-27 02:31:41 ---
+
+--- User: admin@example.com, Executed: sample_query.py, Date: 2025-07-27 02:33:24 ---
+
+--- User: admin@example.com, Executed: sample_query.py, Date: 2025-07-27 02:33:27 ---
+
+--- User: admin@example.com, Executed: sample_query.py, Date: 2025-07-27 02:33:29 ---
+
+--- User: walia, Executed: sample_query.py, Date: 2025-10-24 11:13:35 ---
+
+--- User: walia, Executed: sample_query.py, Date: 2025-10-25 09:08:58 ---
+
+--- User: walia, Executed: sample_query.py, Date: 2025-10-25 09:09:00 ---
+
+--- User: walia, Executed: sample_query.py, Date: 2025-10-25 09:09:19 ---
