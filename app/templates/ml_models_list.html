@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container">
+  <h2>{{ title }}</h2>
+  {% if files %}
+    <ul>
+      {% for f in files %}
+        <li><a href="{{ url_for('main.ml_models_view', filename=f) }}">{{ f }}</a></li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p>No model reports found. Run the report generator to create KMeans and XGBoost reports.</p>
+  {% endif %}
+</div>
+{% endblock %}

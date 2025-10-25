@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Aftar Daftar Dashboard</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f4f6f8;
+      margin: 0;
+      padding: 0;
+    }
+
+    .navbar {
+      background-color: #007BFF;
+      padding: 15px 30px;
+      color: white;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .navbar h1 {
+      margin: 0;
+      font-size: 22px;
+    }
+
+    .navbar a {
+      color: white;
+      text-decoration: none;
+      font-weight: bold;
+      margin-left: 15px;
+    }
+
+    .container {
+      padding: 40px;
+    }
+
+    .scripts {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .card {
+      background: white;
+      border-radius: 10px;
+      padding: 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    .card h3 {
+      margin: 0 0 10px;
+      color: #007BFF;
+      display: flex;
+      align-items: center;
+    }
+
+    .card input[type="checkbox"] {
+      margin-right: 10px;
+    }
+
+    .log {
+      background-color: #f0f0f0;
+      padding: 10px;
+      margin-top: 10px;
+      font-family: monospace;
+      font-size: 13px;
+      height: 100px;
+      overflow-y: auto;
+      white-space: pre-wrap;
+      border-radius: 5px;
+    }
+
+    .run-button {
+      display: inline-block;
+      margin-top: 10px;
+      padding: 8px 16px;
+      background-color: #007BFF;
+      color: white;
+      text-decoration: none;
+      border: none;
+      border-radius: 5px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .run-button:hover {
+      background-color: #0056b3;
+    }
+
+    .flash {
+      margin-top: 10px;
+      color: red;
+      text-align: center;
+    }
+
+    .upload-section {
+      margin-top: 40px;
+      text-align: center;
+    }
+
+    .upload-section form {
+      display: inline-block;
+    }
+
+    .upload-section input[type="file"] {
+      margin: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div class="navbar">
+    <h1>Aftar Daftar - Script Dashboard</h1>
+    <div>
+      <a href="{{ url_for('main.dashboard') }}">Dashboard</a>
+      <a href="{{ url_for('main.upload_script') }}">Upload Script</a>
+      <a href="{{ url_for('auth.logout') }}">Logout</a>
+    </div>
+  </div>
+
+  <div class="container">
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <div class="flash">{{ messages[0] }}</div>
+      {% endif %}
+    {% endwith %}
+
+    <form method="POST" action="{{ url_for('main.run_multiple_scripts') }}">
+      <div class="scripts">
+        {% for script in scripts %}
+          <div class="card">
+            <h3>
+              <input type="checkbox" name="selected_scripts" value="{{ script.filename }}">
+              {{ script.name }}
+            </h3>
+            <div class="log">{{ logs[script.filename] }}</div>
+          </div>
+        {% endfor %}
+      </div>
+      <div style="text-align: center; margin-top: 30px;">
+        <button type="submit" class="run-button">▶ Run Selected Scripts</button>
+      </div>
+    </form>
+
+    {% if request.endpoint == 'main.upload_script' %}
+    <div class="upload-section">
+      <h2>Upload Script</h2>
+      <form method="POST" enctype="multipart/form-data">
+        <input type="file" name="script_file" accept=".py,.ipynb" required>
+        <button type="submit" class="run-button">Upload</button>
+      </form>
+    </div>
+    {% endif %}
+  </div>
+</body>
+</html>

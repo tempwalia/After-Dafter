@@ -1,0 +1,6 @@
+
+[
+    {"name": "Daily Report", "filename": "daily_report.py", "schedule": "Everyday"},
+    {"name": "Weekly Summary", "filename": "weekly_summary.py", "schedule": "Monday"},
+    {"name": "Sample Query", "filename": "sample_query.py", "schedule": "Manual"}
+]

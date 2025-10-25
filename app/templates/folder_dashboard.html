@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>{{ title }}</h2>
+<form method="post" action="{{ run_action }}">
+  <label for="script_name">Select a script:</label>
+  <select name="script_name" id="script_name">
+    {% for file in files %}
+      <option value="{{ file }}">{{ file }}</option>
+    {% endfor %}
+  </select>
+  <button type="submit">Run Selected Script</button>
+</form>
+<br>
+<form method="post" enctype="multipart/form-data" action="{{ upload_action }}">
+  <label for="script_file">Upload a script:</label>
+  <input type="file" name="script_file" id="script_file">
+  <button type="submit">Upload Script</button>
+</form>
+{% endblock %}

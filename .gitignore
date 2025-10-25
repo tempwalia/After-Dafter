@@ -1,0 +1,30 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual Environment
+fresh_venv/
+venv/
+ENV/
+
+# Local development
+*.sqlite
+*.db
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# VS Code
+.vscode/
+
+# Logs
+logs/
+*.log
+
+# Local data
+data/*.csv
+synthetic_data/*.csv
+
+# Generated reports
+ml_models/*.html

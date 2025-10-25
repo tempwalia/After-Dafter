@@ -1,0 +1,9 @@
+<!-- app/templates/generating.html -->
+{% extends "base.html" %}
+{% block content %}
+<h3>Generating report: {{ name }}</h3>
+<p>Status: {{ status }}</p>
+{% if log %}
+<pre>{{ log }}</pre>
+{% endif %}
+{% endblock %}

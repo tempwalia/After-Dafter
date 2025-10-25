@@ -1,0 +1,157 @@
+<!-- app/templates/index.html -->
+{% extends "base.html" %}
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>After-Dafter Dashboard</h1>
+        <div>
+            <span class="me-2">Welcome, {{ current_user.username }}</span>
+            <a href="{{ url_for('main.logout') }}" class="btn btn-outline-danger">Logout</a>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Scripts Section -->
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Available Scripts</h5>
+                </div>
+                <div class="card-body">
+                    <form method="post" action="{{ url_for('main.execute_selected_scripts') }}" id="scriptForm">
+                        <div class="list-group mb-3">
+                            {% for script in scripts %}
+                            <div class="list-group-item">
+                                <div class="form-check">
+                                    <input type="checkbox" class="form-check-input" name="selected_scripts" 
+                                           value="{{ script.name }}" id="script_{{ loop.index }}">
+                                    <label class="form-check-label" for="script_{{ loop.index }}">
+                                        {{ script.name }}
+                                        <small class="text-muted d-block">Last run: {{ script.last_run if script.last_run else 'Never' }}</small>
+                                    </label>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        <button type="submit" class="btn btn-primary" id="executeBtn" disabled>
+                            Execute Selected Scripts
+                        </button>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Execution Log Section -->
+            <div class="card mt-3">
+                <div class="card-header">
+                    <h5 class="mb-0">Recent Execution Logs</h5>
+                </div>
+                <div class="card-body">
+                    <div class="list-group">
+                        {% for log in execution_logs %}
+                        <div class="list-group-item">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h6 class="mb-1">{{ log.script_name }}</h6>
+                                <small>{{ log.timestamp }}</small>
+                            </div>
+                            <p class="mb-1">{{ log.status }}</p>
+                            <small>Executed by: {{ log.user }}</small>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ML Model Reports Section -->
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">ML Model Reports</h5>
+                </div>
+                <div class="card-body">
+                    <div class="list-group">
+                        {% for report in reports %}
+                        <a href="{{ url_for('main.view_report', filename=report.name) }}"
+                           class="list-group-item list-group-item-action">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h6 class="mb-1">{{ report.name }}</h6>
+                                <small>{{ report.date }}</small>
+                            </div>
+                            <p class="mb-1">{{ report.description }}</p>
+                            <small class="text-muted">Click to view full report</small>
+                        </a>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            {% if current_user.role == 'admin' %}
+            <div class="card mt-3">
+                <div class="card-header">
+                    <h5 class="mb-0">ML Model Generation</h5>
+                </div>
+                <div class="card-body">
+                    <form method="post" action="{{ url_for('main.generate_kmeans') }}">
+                        <button class="btn btn-primary mb-2 w-100" type="submit">
+                            Generate K-Means Clustering Report
+                        </button>
+                    </form>
+                    <form method="post" action="{{ url_for('main.generate_xgb') }}">
+                        <button class="btn btn-success w-100" type="submit">
+                            Generate XGBoost Report
+                        </button>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Notebook Templates -->
+            <div class="card mt-3">
+                <div class="card-header">
+                    <h5 class="mb-0">Notebook Templates</h5>
+                </div>
+                <div class="card-body">
+                    {% if notebooks and notebooks|length > 0 %}
+                    <form method="post" action="{{ url_for('main.generate_notebook') }}">
+                        <div class="mb-2">
+                            <label for="notebook_name" class="form-label">Select notebook to run</label>
+                            <select name="notebook_name" id="notebook_name" class="form-select" required>
+                                <option value="">-- choose --</option>
+                                {% for nb in notebooks %}
+                                <option value="{{ nb.name }}">{{ nb.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="mb-2">
+                            <label for="data_path_nb" class="form-label">Dataset path (optional)</label>
+                            <input type="text" class="form-control" id="data_path_nb" name="data_path" placeholder="{{ default_data }}">
+                        </div>
+                        <button class="btn btn-outline-primary w-100" type="submit">Run Notebook & Export HTML</button>
+                    </form>
+                    {% else %}
+                    <p class="mb-0">No notebook templates found. Place .ipynb files in the <code>notebooks/</code> folder.</p>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('scriptForm');
+    const checkboxes = form.querySelectorAll('input[type="checkbox"]');
+    const executeBtn = document.getElementById('executeBtn');
+    
+    // Enable/disable execute button based on selections
+    function updateExecuteButton() {
+        const checkedBoxes = form.querySelectorAll('input[type="checkbox"]:checked');
+        executeBtn.disabled = checkedBoxes.length === 0;
+    }
+    
+    checkboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', updateExecuteButton);
+    });
+});
+</script>
+{% endblock %}

@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container-fluid mt-4">
+    <div class="row">
+        <!-- Sidebar -->
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Available Reports</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="list-group list-group-flush">
+                        {% for report in all_reports %}
+                        <a href="{{ url_for('main.view_report', filename=report.name) }}" 
+                           class="list-group-item list-group-item-action {% if report.name == current_report.name %}active{% endif %}">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h6 class="mb-1">{{ report.name }}</h6>
+                                <small>{{ report.date }}</small>
+                            </div>
+                            <small class="text-{% if report.name == current_report.name %}light{% else %}muted{% endif %}">
+                                {{ report.description }}
+                            </small>
+                        </a>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            <div class="mt-3">
+                <a href="{{ url_for('main.index') }}" class="btn btn-outline-primary w-100">
+                    <i class="bi bi-arrow-left"></i> Back to Dashboard
+                </a>
+            </div>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="col-md-9">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h4 class="mb-0">{{ current_report.name }}</h4>
+                    <small>Generated: {{ current_report.date }}</small>
+                </div>
+                <div class="card-body">
+                    <iframe src="{{ report_content_url }}" style="width: 100%; height: 800px; border: none;"></iframe>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css">
+{% endblock %}

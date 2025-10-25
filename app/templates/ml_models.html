@@ -1,0 +1,16 @@
+<!-- app/templates/ml_models.html -->
+{% extends "base.html" %}
+{% block content %}
+<h2>ML Models</h2>
+<p>This page lists all generated model HTML reports. Click a heading to open the corresponding report.</p>
+
+<ul class="list-group">
+  {% for fname in files %}
+    <li class="list-group-item">
+      <a href="{{ url_for('main.serve_model_report', filename=fname) }}" target="_blank">{{ fname }}</a>
+    </li>
+  {% else %}
+    <li class="list-group-item">No model reports found. Generate one from the <a href="{{ url_for('main.index') }}">Home</a> page.</li>
+  {% endfor %}
+</ul>
+{% endblock %}
