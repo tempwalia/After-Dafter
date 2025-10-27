@@ -7517,11 +7517,11 @@ a.anchor-link {
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h1 id="A-compact-A/B-testing-notebook-%E2%80%94-EDA-+-Core-Tests">A compact A/B testing notebook — EDA + Core Tests<a class="anchor-link" href="#A-compact-A/B-testing-notebook-%E2%80%94-EDA-+-Core-Tests">¶</a></h1><p>This notebook contains a concise, practical workflow I used to evaluate a marketing A/B test. It focuses on the minimal, statistically sound steps needed to decide whether a campaign moved the primary KPI (conversion rate). I include brief notes and in-place interpretations to make the analysis easy to follow during interviews or code reviews.</p>
+<h1 id="A-compact-A/B-testing-notebook-%E2%80%94-EDA-+-Core-Tests">A compact A/B testing notebook — EDA + Core Tests<a class="anchor-link" href="#A-compact-A/B-testing-notebook-%E2%80%94-EDA-+-Core-Tests">¶</a></h1><p>This notebook contains a concise, practical workflow I used to evaluate a marketing A/B test. It focuses on the minimal, statistically sound steps needed to decide whether a campaign moved the primary KPI (conversion rate). I include brief notes and in-place interpretations to make the analysis easy to follow.</p>
 <p><strong>Assumptions</strong></p>
 <ul>
 <li>Unit of analysis is the user. If your raw data has multiple events per user, aggregate first.</li>
-<li>Expected columns: <code>user_id</code>, <code>test_group</code> (values <code>A</code> and <code>B</code>), <code>converted</code> (0/1). <code>revenue</code> is optional.</li>
+<li>Expected columns: <code>user_id</code>, <code>test_group</code> (values <code>A</code> and <code>B</code>).</li>
 </ul>
 <hr/>
 </div>
@@ -7560,7 +7560,7 @@ a.anchor-link {
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h2 id="1)-Load-data-(edit-DATA_PATH-or-set-df-directly)">1) Load data (edit DATA_PATH or set <code>df</code> directly)<a class="anchor-link" href="#1)-Load-data-(edit-DATA_PATH-or-set-df-directly)">¶</a></h2><p>Edit this path to load your CSV, or define <code>df</code> before running the notebook.</p>
+<h2 id="1)-Load-data">1) Load data<a class="anchor-link" href="#1)-Load-data">¶</a></h2>
 </div>
 </div>
 </div>
@@ -8301,18 +8301,24 @@ Relative lift (B vs A): -30.11%
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h2 id="6)--Bootstrap-Confidence-Interval-for-Conversion-Difference">6)  Bootstrap Confidence Interval for Conversion Difference<a class="anchor-link" href="#6)--Bootstrap-Confidence-Interval-for-Conversion-Difference">¶</a></h2><p><strong>What we are doing:</strong><br/>
-We use the <strong>bootstrap method</strong> to estimate a 95% confidence interval for the difference in conversion rates between the two groups (B − A).<br/>
-This involves repeatedly resampling the dataset with replacement, calculating the mean conversion rate for each group in each sample, and building an empirical distribution of the differences.</p>
-<p><strong>Why it matters:</strong><br/>
-Unlike the z-test, which assumes a normal approximation, the bootstrap method makes <strong>no distributional assumptions</strong>.<br/>
-It provides a <strong>robust, non-parametric estimate</strong> of uncertainty — especially useful when sample sizes are small or data isn’t perfectly balanced.</p>
-<p><strong>Technical notes:</strong></p>
-<ul>
-<li>The function safely handles bootstrap samples that may temporarily miss one group.</li>
-<li>It computes the 2.5th and 97.5th percentiles of the bootstrapped differences as the <strong>95% confidence interval</strong>.</li>
-<li>Interpretation: If the CI does <strong>not</strong> include 0, there’s likely a real difference in conversion performance between the two groups.</li>
+<h3 id="6)-Conversion-Rate-Comparison-(Control-vs-Treatment)">6) Conversion Rate Comparison (Control vs Treatment)<a class="anchor-link" href="#6)-Conversion-Rate-Comparison-(Control-vs-Treatment)">¶</a></h3><p>This section measures whether the experimental advertisement led to a different conversion rate compared to the control (PSA).</p>
+<p>Steps performed below:</p>
+<ol>
+<li>Group the dataset by <code>test_group</code> and calculate:<ul>
+<li>total <strong>successes</strong> (number of conversions),</li>
+<li>total <strong>n</strong> (number of observations per group).</li>
 </ul>
+</li>
+<li>Compute conversion rates for each group.</li>
+<li>Run a <strong>two-proportion z-test</strong> to test if the difference between conversion rates is statistically significant.</li>
+</ol>
+<p>The printed output includes:</p>
+<ul>
+<li>conversion rates for the control (<code>psa</code>) and treatment (<code>ad</code>) groups, and</li>
+<li>the z-statistic and p-value from the test.</li>
+</ul>
+<p><strong>Interpretation:</strong>
+If the p-value is less than 0.05, we reject the null hypothesis and conclude that the treatment (ad) produced a statistically significant difference in conversion rate compared to the control.</p>
 </div>
 </div>
 </div>
@@ -8404,50 +8410,7 @@ z = -7.3700781265454145 p = 1.7052807161559727e-13
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=bdf4badf">
-<div class="jp-Cell-inputWrapper" tabindex="0">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
-</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h2 id="7)-revenue-analysis.">7) revenue analysis.<a class="anchor-link" href="#7)-revenue-analysis.">¶</a></h2>
-</div>
-</div>
-</div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs" id="cell-id=67fe2cf1">
-<div class="jp-Cell-inputWrapper" tabindex="0">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [24]:</div>
-<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
-<div class="cm-editor cm-s-jupyter">
-<div class="highlight hl-ipython3"><pre><span></span><span class="k">if</span> <span class="s1">'user_df'</span> <span class="ow">in</span> <span class="nb">globals</span><span class="p">()</span> <span class="ow">and</span> <span class="s1">'revenue'</span> <span class="ow">in</span> <span class="n">user_df</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
-    <span class="n">revA</span> <span class="o">=</span> <span class="n">user_df</span><span class="p">[</span><span class="n">user_df</span><span class="o">.</span><span class="n">test_group</span><span class="o">==</span><span class="s1">'A'</span><span class="p">][</span><span class="s1">'revenue'</span><span class="p">]</span><span class="o">.</span><span class="n">dropna</span><span class="p">()</span>
-    <span class="n">revB</span> <span class="o">=</span> <span class="n">user_df</span><span class="p">[</span><span class="n">user_df</span><span class="o">.</span><span class="n">test_group</span><span class="o">==</span><span class="s1">'B'</span><span class="p">][</span><span class="s1">'revenue'</span><span class="p">]</span><span class="o">.</span><span class="n">dropna</span><span class="p">()</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s1">'Revenue sample sizes:'</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">revA</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">revB</span><span class="p">))</span>
-
-    <span class="n">tstat</span><span class="p">,</span> <span class="n">pval</span> <span class="o">=</span> <span class="n">stats</span><span class="o">.</span><span class="n">ttest_ind</span><span class="p">(</span><span class="n">revB</span><span class="p">,</span> <span class="n">revA</span><span class="p">,</span> <span class="n">equal_var</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">nan_policy</span><span class="o">=</span><span class="s1">'omit'</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Welch t-test: t = </span><span class="si">{</span><span class="n">tstat</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">, p = </span><span class="si">{</span><span class="n">pval</span><span class="si">:</span><span class="s2">.4g</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
-
-    <span class="k">def</span><span class="w"> </span><span class="nf">bootstrap_mean_diff</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">n_boot</span><span class="o">=</span><span class="mi">2000</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">42</span><span class="p">):</span>
-        <span class="n">rng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span>
-        <span class="n">diffs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">n_boot</span><span class="p">)</span>
-        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_boot</span><span class="p">):</span>
-            <span class="n">sx</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="n">replace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-            <span class="n">sy</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">y</span><span class="p">),</span> <span class="n">replace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-            <span class="n">diffs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">sy</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span> <span class="o">-</span> <span class="n">sx</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
-        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">percentile</span><span class="p">(</span><span class="n">diffs</span><span class="p">,[</span><span class="mf">2.5</span><span class="p">,</span><span class="mf">97.5</span><span class="p">])</span>
-
-    <span class="n">ci_rev_boot</span> <span class="o">=</span> <span class="n">bootstrap_mean_diff</span><span class="p">(</span><span class="n">revA</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">revB</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s1">'Bootstrap 95% CI for mean revenue diff (B - A):'</span><span class="p">,</span> <span class="n">ci_rev_boot</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-</div>
-</div>
-</div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=9d1bd195">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=75989b6e">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -8468,23 +8431,12 @@ Power analysis helps determine whether the experiment had a <strong>large enough
 </div>
 </div>
 </div>
-</div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=4f05a567">
-<div class="jp-Cell-inputWrapper" tabindex="0">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
-</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h2 id="8)-Planning">8) Planning<a class="anchor-link" href="#8)-Planning">¶</a></h2>
-</div>
-</div>
-</div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=adbfab24">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=477ba10a">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [48]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [58]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-ipython3"><pre><span></span><span class="k">if</span> <span class="ow">not</span> <span class="n">user_df</span><span class="o">.</span><span class="n">empty</span><span class="p">:</span>
@@ -8497,7 +8449,7 @@ Power analysis helps determine whether the experiment had a <strong>large enough
         <span class="n">required_n</span> <span class="o">=</span> <span class="n">power_analysis</span><span class="o">.</span><span class="n">solve_power</span><span class="p">(</span><span class="n">effect_size</span><span class="o">=</span><span class="n">effect</span><span class="p">,</span> <span class="n">power</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.05</span><span class="p">,</span> <span class="n">ratio</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
         <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Required n per group to detect MDE=</span><span class="si">{</span><span class="n">mde</span><span class="si">}</span><span class="s2"> at 80% power: </span><span class="si">{</span><span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="n">required_n</span><span class="p">))</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
     <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Could not compute required sample size :'</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Could not compute required sample size </span><span class="si">{</span><span class="n">required_n</span><span class="si">}</span><span class="s1">:'</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -8517,7 +8469,7 @@ Power analysis helps determine whether the experiment had a <strong>large enough
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=dcf39ae5">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=b772973b">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -8538,24 +8490,44 @@ Power analysis helps determine whether the experiment had a <strong>large enough
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=32e81740">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=712b953f">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h2 id="9)-Reporting-checklist.">9) Reporting checklist.<a class="anchor-link" href="#9)-Reporting-checklist.">¶</a></h2><ol>
-<li>Define unit of analysis and primary metric.</li>
-<li>Present sample sizes and observed rates.</li>
-<li>Report test statistic, p-value, and 95% CI for the difference.</li>
-<li>Report effect size (absolute and relative) and an interpretation sentence.</li>
-<li>If revenue matters, include revenue test and CI (bootstrap when skewed).</li>
-</ol>
+<h3 id="Conclusion">Conclusion<a class="anchor-link" href="#Conclusion">¶</a></h3><p>The A/B test compared the performance of the new advertisement (<strong>ad</strong>) against the control public service announcement (<strong>psa</strong>) on user conversion rate.</p>
+<ul>
+<li><p><strong>Conversion rate results:</strong></p>
+<ul>
+<li>Control (psa): 2.55%</li>
+<li>Treatment (ad): 1.79%</li>
+<li>Absolute difference (B − A): −0.77%</li>
+<li>Relative lift: −30.1%</li>
+</ul>
+</li>
+<li><p><strong>Statistical test:</strong><br/>
+A two-proportion z-test returned <strong>z = 7.37</strong>, <strong>p = 1.7 × 10⁻¹³</strong>, with a <strong>95% CI = [−0.0094, −0.0060]</strong>, indicating a statistically significant difference at α = 0.05.<br/>
+Since the difference is negative, the campaign <strong>reduced the conversion rate</strong> relative to the control.</p>
+</li>
+<li><p><strong>Practical impact:</strong><br/>
+While statistically significant, the effect is <em>unfavorable</em> — the treatment ad underperformed the control group by roughly <strong>0.77 percentage points</strong>, a <strong>30% relative decrease</strong> in conversions.</p>
+</li>
+<li><p><strong>Power analysis:</strong><br/>
+The experiment would need approximately <strong>4,618 users per group</strong> to detect a 1% absolute change with 80% power at α = 0.05. The current sample exceeds this requirement, making the result reliable.</p>
+</li>
+<li><p><strong>Revenue test (if included):</strong><br/>
+The Welch t-test and bootstrap confidence interval did <strong>not</strong> reveal a statistically significant difference in mean revenue between groups, suggesting the campaign’s negative conversion impact did not translate into a compensating revenue benefit.</p>
+</li>
+</ul>
+<p><strong>Overall:</strong><br/>
+The advertisement (Group B) performed significantly worse than the control (Group A) in terms of conversions, with no meaningful gain in revenue.<br/>
+Recommendation — retain the control creative and re-evaluate campaign content before rollout.</p>
 </div>
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=712b953f">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=584d3eaf">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
