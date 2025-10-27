@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="row justify-content-center fade-in">
+  <div class="col-xl-11">
+    <div class="card glass-card mb-3">
+      <div class="card-body p-4 p-lg-5" style="background: radial-gradient(1200px 400px at -10% -30%, rgba(255,255,255,.06), rgba(255,255,255,0)), radial-gradient(800px 300px at 120% 120%, rgba(255,255,255,.04), rgba(255,255,255,0));">
+        <div class="row g-4 align-items-center">
+          <!-- Left: Summary (wider) -->
+          <div class="col-lg-8">
+            <div class="d-flex align-items-start justify-content-between mb-3">
+              <div class="me-3">
+                {% if resume_exists %}
+                <a class="btn btn-sm btn-outline-light mb-2" href="{{ resume_url }}" target="_blank" download>Download Resume</a>
+                {% endif %}
+                <div class="text-uppercase small text-muted">Profile</div>
+                <h1 class="mb-0" style="font-size:2rem; line-height:1.1;">Tikam Singh Walia</h1>
+                <span class="badge bg-light text-dark mt-2" style="font-weight:600;">Data Science Professional</span>
+              </div>
+            </div>
+
+            <p class="mb-3" style="text-align: justify; white-space: pre-line; color:#d1d5db;">{{ about_text }}</p>
+
+            <h5 class="mt-3 mb-2">My Skills</h5>
+            <div class="table-responsive">
+              <table class="table table-sm align-middle mb-0" style="color:#e5e7eb;">
+                <tbody>
+                  {% for row in skills|batch(3, '') %}
+                  <tr>
+                    {% for cell in row %}
+                    <td style="border-color: rgba(255,255,255,.08);">{{ cell }}</td>
+                    {% endfor %}
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Right: Portrait -->
+          <div class="col-lg-4">
+            <div style="max-width: 480px; margin-left:auto;">
+              {% if profile_exists %}
+              <img src="{{ profile_url }}" alt="Profile" class="rounded"
+                   style="display:block; width:100%; aspect-ratio: 3 / 4; object-fit: cover; filter: grayscale(10%); border:1px solid rgba(255,255,255,.1);">
+              {% else %}
+              <div class="d-flex align-items-center justify-content-center rounded bg-dark"
+                   style="width:100%; aspect-ratio: 3 / 4; border:1px dashed rgba(255,255,255,.25); color:#9ca3af;">No image</div>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+  </div>
+</div>
+{% endblock %}

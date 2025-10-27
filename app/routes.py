@@ -14,6 +14,14 @@ main_bp = Blueprint('main', __name__)
 
 # Default dataset path (user uploaded file can override)
 DEFAULT_DATA = os.path.join(os.getcwd(), 'data', 'synthetic_callcenter_accounts.csv')
+# Common directories
+SCRIPTS_DIR = os.path.join(os.getcwd(), 'scripts')
+R_DIR = os.path.join(os.getcwd(), 'R')
+# Power BI HTMLs are now under R/Powerbi (note casing)
+POWERBI_DIR = os.path.join(os.getcwd(), 'R', 'Powerbi')
+IMAGE_DIR = os.path.join(os.getcwd(), 'Image')
+RESUME_FILENAME = "_Tikam Singh Walia10_15.pdf"
+IMAGE_EXTS = {'.png', '.jpg', '.jpeg', '.gif', '.webp'}
 
 ALLOWED_EXTENSIONS = {'csv'}
 
@@ -30,7 +38,7 @@ def login():
         if user and user.password == password:
             login_user(user)
             flash('Logged in successfully.', 'success')
-            return redirect(url_for('main.index'))
+            return redirect(url_for('main.about'))
         else:
             flash('Invalid username or password.', 'danger')
     
@@ -54,7 +62,7 @@ def index():
     
     # Get list of executable scripts with last run time
     # Use the actual scripts directory in the repo
-    scripts_path = os.path.join(os.getcwd(), 'scripts', '*.py')
+    scripts_path = os.path.join(SCRIPTS_DIR, '*.py')
     scripts = []
     log_file = os.path.join(current_app.config['LOGS_DIR'], f'script_logs_{datetime.datetime.now().strftime("%Y%m%d")}.txt')
     
@@ -129,7 +137,7 @@ def execute_selected_scripts():
     results = []
     for script_name in selected_scripts:
         # Execute scripts from the actual 'scripts' directory
-        script_path = os.path.join(os.getcwd(), 'scripts', script_name)
+        script_path = os.path.join(SCRIPTS_DIR, script_name)
         if not os.path.exists(script_path):
             results.append({'script': script_name, 'status': 'error', 'message': 'Script not found'})
             continue
@@ -315,3 +323,125 @@ def generate_notebook():
     except subprocess.CalledProcessError as e:
         flash(f'Notebook execution failed: {e}', 'danger')
         return redirect(url_for('main.index'))
+
+@main_bp.route('/about')
+@login_required
+def about():
+    """About page with resume and brief profile."""
+    resume_exists = os.path.exists(os.path.join(SCRIPTS_DIR, RESUME_FILENAME))
+    about_text = (
+        "I’m Tikam Singh Walia, a Data Science professional with over 6 years of experience in designing and "
+        "implementing data-driven solutions that translate complex business problems into actionable insights.\n\n"
+        "My expertise spans statistical modeling, machine learning, and data visualization, with hands-on "
+        "experience in tools like Python, R, SQL, Power BI, Tableau, and Azure Synapse Analytics. I have successfully "
+        "developed and deployed machine learning models for behavioral segmentation and operational optimization, along "
+        "with building automated ETL pipelines and real-time reporting frameworks using modern data engineering techniques.\n\n"
+        "Driven by curiosity and precision, I combine analytical rigor with practical execution to deliver measurable business impact."
+    )
+    skills = [
+        "Machine Learning",
+        "Python Programming",
+        "Azure | Github | VSN",
+        "R Programming",
+        "Azure Synapse Analytics",
+        "SQL",
+        "PowerBI | Tableau",
+        "Statistics",
+        "Excel",
+    ]
+    # Profile image from Image/ folder, prefer a file named 'Tikam.*'
+    profile_filename = None
+    if os.path.isdir(IMAGE_DIR):
+        try:
+            for f in os.listdir(IMAGE_DIR):
+                name, ext = os.path.splitext(f)
+                if name.lower() == 'tikam' and ext.lower() in IMAGE_EXTS:
+                    profile_filename = f
+                    break
+        except Exception:
+            profile_filename = None
+    profile_exists = profile_filename is not None
+    profile_url = url_for('main.serve_image', filename=profile_filename) if profile_exists else None
+    return render_template('about.html', resume_exists=resume_exists, skills=skills,
+                           resume_url=url_for('main.serve_resume'),
+                           profile_exists=profile_exists, profile_url=profile_url,
+                           about_text=about_text)
+
+@main_bp.route('/resume')
+@login_required
+def serve_resume():
+    """Serve the resume PDF stored under scripts/."""
+    return send_from_directory(SCRIPTS_DIR, RESUME_FILENAME)
+
+@main_bp.route('/serve-image/<path:filename>')
+@login_required
+def serve_image(filename):
+    """Serve images from the root Image/ directory safely."""
+    base = IMAGE_DIR
+    full_path = os.path.join(base, filename)
+    if not _is_safe_path(base, full_path) or not os.path.exists(full_path):
+        flash('Image not found.', 'danger')
+        return redirect(url_for('main.about'))
+    return send_from_directory(base, filename)
+
+@main_bp.route('/baut')
+@login_required
+def baut_tasks():
+    """List automation/report scripts (filenames containing 'report')."""
+    all_scripts = sorted(glob.glob(os.path.join(SCRIPTS_DIR, '*.py')))
+    report_scripts = [os.path.basename(p) for p in all_scripts if 'report' in os.path.basename(p).lower()]
+    return render_template('BAU.html', report_scripts=report_scripts)
+
+def _is_safe_path(base, path):
+    base = os.path.abspath(base)
+    path = os.path.abspath(path)
+    try:
+        return os.path.commonpath([base]) == os.path.commonpath([base, path])
+    except Exception:
+        return False
+
+@main_bp.route('/r-powerbi')
+@login_required
+def r_powerbi_list():
+    """List HTML reports generated by R or stored under PowerBI folder."""
+    r_htmls = []
+    powerbi_htmls = []
+    pbx_entries = []  # PBIX/PBXI and optional matching HTML to embed
+    if os.path.isdir(R_DIR):
+        r_htmls = sorted([f for f in os.listdir(R_DIR) if f.lower().endswith('.html')])
+    if os.path.isdir(POWERBI_DIR):
+        items = sorted(os.listdir(POWERBI_DIR))
+        powerbi_htmls = [f for f in items if f.lower().endswith('.html')]
+        pbx_files = [f for f in items if f.lower().endswith(('.pbix', '.pbxi'))]
+        # For each PBIX/PBXI, see if a same-basename HTML exists for embedding
+        html_set = {os.path.splitext(f)[0].lower(): f for f in powerbi_htmls}
+        for pbx in pbx_files:
+            base = os.path.splitext(pbx)[0].lower()
+            embed_html = html_set.get(base)
+            pbx_entries.append({
+                'file': pbx,
+                'embed_html': embed_html,
+                'embed_url': url_for('main.serve_external_html', category='powerbi', filename=embed_html) if embed_html else None,
+                'download_url': url_for('main.serve_external_html', category='powerbi', filename=pbx)
+            })
+    return render_template('r_powerbi.html', r_files=r_htmls, powerbi_files=powerbi_htmls, pbx_entries=pbx_entries)
+
+@main_bp.route('/serve-external/<category>/<path:filename>')
+@login_required
+def serve_external_html(category, filename):
+    """Serve HTML from R/ or powerBi/ directories safely."""
+    if category.lower() == 'r':
+        base = R_DIR
+    elif category.lower() == 'powerbi':
+        base = POWERBI_DIR
+    else:
+        flash('Invalid category.', 'danger')
+        return redirect(url_for('main.index'))
+
+    full_path = os.path.join(base, filename)
+    if not _is_safe_path(base, full_path) or not os.path.exists(full_path):
+        flash('File not found.', 'danger')
+        return redirect(url_for('main.r_powerbi_list'))
+    return send_from_directory(base, filename)
+
+# Upload route removed; profile image is now sourced from Image/ directory.

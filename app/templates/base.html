@@ -9,13 +9,81 @@
     <style>
         body {
             padding-bottom: 20px;
-            background-color: #f8f9fa;
+            /* darker, subtle gradient background */
+            background: linear-gradient(120deg, #0b1020 0%, #0a1424 45%, #0b1020 100%);
+            position: relative;
+            z-index: 0;
+        }
+        /* Watermark profile image in background */
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            background: url('{{ url_for('main.serve_image', filename='Tikam.jpeg') }}') no-repeat 95% 10% / 26vw auto;
+            opacity: .05;
+            filter: grayscale(100%) contrast(120%);
+            pointer-events: none;
+            z-index: 0;
         }
         .card {
-            box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+            box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.35);
+            background: rgba(15, 23, 42, 0.6);
+            color: #e5e7eb;
+            border: 1px solid rgba(255,255,255,.08);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
         }
-        .list-group-item:hover {
-            background-color: #f8f9fa;
+        .card h1, .card h2, .card h3, .card h4, .card h5, .card h6 { color: #f8fafc; }
+                /* Glassmorphism card for dark theme sections */
+                .glass-card {
+                        background: rgba(15, 23, 42, 0.6); /* slate-900 w/ transparency */
+                        border: 1px solid rgba(255, 255, 255, 0.08);
+                        color: #e5e7eb; /* text-slate-200 */
+                        backdrop-filter: blur(10px);
+                        -webkit-backdrop-filter: blur(10px);
+                        box-shadow: 0 10px 30px rgba(0,0,0,.35);
+                }
+                .glass-card h1, .glass-card h2, .glass-card h3, .glass-card h4, .glass-card h5, .glass-card h6 { color: #f8fafc; }
+                .glass-card .text-muted { color: rgba(229,231,235,.75) !important; }
+
+                /* Subtle fade-in */
+                .fade-in { animation: fadeInUp 600ms ease-out 1; }
+                @keyframes fadeInUp {
+                    from { opacity: 0; transform: translateY(10px); }
+                    to   { opacity: 1; transform: translateY(0); }
+                }
+        .list-group {
+            --bs-list-group-bg: transparent;
+            --bs-list-group-color: #e5e7eb;
+            --bs-list-group-border-color: rgba(255,255,255,.12);
+        }
+        .list-group-item {
+            background: rgba(255,255,255,0.03);
+            color: #e5e7eb;
+            border-color: rgba(255,255,255,.12);
+            font-size: 0.95rem;
+        }
+        .list-group-item:hover { background: rgba(255,255,255,0.06); }
+        .table { color: #e5e7eb; }
+        .table > :not(caption) > * > * { background-color: transparent; border-color: rgba(255,255,255,.12); }
+        /* Gradient navbar */
+        .navbar.navbar-gradient {
+            /* darker gradient navbar */
+            background: linear-gradient(90deg, #0f172a 0%, #1d4ed8 45%, #0f766e 100%);
+            box-shadow: 0 0.25rem 0.75rem rgba(0,0,0,.35);
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+            background-blend-mode: overlay;
+        }
+        .navbar.navbar-gradient .nav-link,
+        .navbar.navbar-gradient .navbar-brand { color: #fff; }
+        .navbar.navbar-gradient .nav-link.active,
+        .navbar.navbar-gradient .nav-link:hover { color: #fde68a; }
+        .badge-nav {
+            background: rgba(255,255,255,.15);
+            color: #fff;
+            border: 1px solid rgba(255,255,255,.2);
+            margin-left: .35rem;
         }
         /* Constrained scrollable panels for long lists */
         .scroll-panel {
@@ -28,9 +96,9 @@
     </style>
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
+    <nav class="navbar navbar-expand-lg navbar-dark navbar-gradient mb-4" style="z-index:2; position: relative;">
         <div class="container">
-            <a class="navbar-brand" href="{{ url_for('main.index') }}">After-Dafter</a>
+            <a class="navbar-brand" href="{{ url_for('main.about') }}">After-Dafter</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
@@ -38,7 +106,19 @@
                 <ul class="navbar-nav me-auto">
                     {% if current_user.is_authenticated %}
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('main.index') }}">Dashboard</a>
+                        <a class="nav-link" href="{{ url_for('main.index') }}">Dashboard <span class="badge rounded-pill badge-nav">Home</span></a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('main.ml_models') }}">ML Models <span class="badge rounded-pill badge-nav">New</span></a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('main.r_powerbi_list') }}">R / Powerbi <span class="badge rounded-pill badge-nav">Reports</span></a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('main.baut_tasks') }}">BAU Task Automated <span class="badge rounded-pill badge-nav">Run</span></a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('main.about') }}">About <span class="badge rounded-pill badge-nav">Me</span></a>
                     </li>
                     {% endif %}
                 </ul>
@@ -54,7 +134,7 @@
         </div>
     </nav>
 
-    <div class="container">
+    <div class="container" style="position: relative; z-index:1;">
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
                 {% for category, message in messages %}
@@ -62,8 +142,35 @@
                 {% endfor %}
             {% endif %}
         {% endwith %}
-        
-        {% block content %}{% endblock %}
+        <div class="row g-3">
+            <!-- Sidebar: shows on all pages -->
+            <aside class="col-12 col-lg-3 col-xl-2">
+                <div class="card glass-card p-3" style="position: sticky; top: 92px;">
+                    <div class="small text-uppercase text-muted mb-2">Navigation</div>
+                    <ul class="list-group">
+                        <li class="list-group-item {% if request.endpoint == 'main.about' %}active{% endif %}">
+                            <a class="stretched-link text-decoration-none {% if request.endpoint == 'main.about' %}text-dark{% else %}text-light{% endif %}" href="{{ url_for('main.about') }}">About Me</a>
+                        </li>
+                        <li class="list-group-item {% if request.endpoint == 'main.index' %}active{% endif %}">
+                            <a class="stretched-link text-decoration-none {% if request.endpoint == 'main.index' %}text-dark{% else %}text-light{% endif %}" href="{{ url_for('main.index') }}">Dashboard</a>
+                        </li>
+                        <li class="list-group-item {% if request.endpoint == 'main.ml_models' %}active{% endif %}">
+                            <a class="stretched-link text-decoration-none {% if request.endpoint == 'main.ml_models' %}text-dark{% else %}text-light{% endif %}" href="{{ url_for('main.ml_models') }}">ML Models</a>
+                        </li>
+                        <li class="list-group-item {% if request.endpoint == 'main.r_powerbi_list' %}active{% endif %}">
+                            <a class="stretched-link text-decoration-none {% if request.endpoint == 'main.r_powerbi_list' %}text-dark{% else %}text-light{% endif %}" href="{{ url_for('main.r_powerbi_list') }}">R / Powerbi</a>
+                        </li>
+                        <li class="list-group-item {% if request.endpoint == 'main.baut_tasks' %}active{% endif %}">
+                            <a class="stretched-link text-decoration-none {% if request.endpoint == 'main.baut_tasks' %}text-dark{% else %}text-light{% endif %}" href="{{ url_for('main.baut_tasks') }}">BAU Task Automated</a>
+                        </li>
+                    </ul>
+                </div>
+            </aside>
+            <!-- Main content -->
+            <main class="col-12 col-lg-9 col-xl-10">
+                {% block content %}{% endblock %}
+            </main>
+        </div>
     </div>
 
     <!-- Bootstrap Bundle with Popper -->

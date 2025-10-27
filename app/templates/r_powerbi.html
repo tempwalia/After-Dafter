@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% block content %}
+<h2 class="mb-3">R / Powerbi Reports</h2>
+<div class="row g-3">
+  <div class="col-lg-6">
+    <div class="card h-100">
+      <div class="card-body">
+        <h5 class="card-title">R HTML Reports (R/)</h5>
+        <ul class="list-group scroll-panel">
+          {% for f in r_files %}
+          <li class="list-group-item d-flex justify-content-between align-items-center">
+            <span>{{ f }}</span>
+            <a class="btn btn-sm btn-outline-primary" target="_blank" href="{{ url_for('main.serve_external_html', category='r', filename=f) }}">Open</a>
+          </li>
+          {% else %}
+          <li class="list-group-item">No HTML files found in R/</li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-6">
+    <div class="card h-100">
+      <div class="card-body">
+        <h5 class="card-title">Power BI (R/Powerbi/)</h5>
+        <p class="text-muted">HTML files open directly. PBIX/PBXI entries will embed a matching HTML with the same name when available.</p>
+        <div class="mb-3">
+          <h6 class="mb-2">HTML Files</h6>
+          <ul class="list-group scroll-panel">
+            {% for f in powerbi_files %}
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+              <span>{{ f }}</span>
+              <a class="btn btn-sm btn-outline-primary" target="_blank" href="{{ url_for('main.serve_external_html', category='powerbi', filename=f) }}">Open</a>
+            </li>
+            {% else %}
+            <li class="list-group-item">No HTML files found in R/Powerbi/</li>
+            {% endfor %}
+          </ul>
+        </div>
+        <div>
+          <h6 class="mb-2">Embedded (PBIX/PBXI with matching HTML)</h6>
+          <div class="scroll-panel" style="max-height: 520px;">
+            {% for entry in pbx_entries %}
+              <div class="mb-3 p-2 border rounded">
+                <div class="d-flex justify-content-between align-items-center">
+                  <strong>{{ entry.file }}</strong>
+                  <a class="btn btn-sm btn-outline-secondary" href="{{ entry.download_url }}">Download</a>
+                </div>
+                {% if entry.embed_html and entry.embed_url %}
+                  <div class="ratio ratio-16x9 mt-2">
+                    <iframe src="{{ entry.embed_url }}" title="{{ entry.file }}" style="border:1px solid #ddd; border-radius:6px;"></iframe>
+                  </div>
+                {% else %}
+                  <div class="mt-2 text-muted">No matching HTML found for embedding. Provide an HTML export with the same filename.</div>
+                {% endif %}
+              </div>
+            {% else %}
+              <div class="text-muted">No PBIX/PBXI files found.</div>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
