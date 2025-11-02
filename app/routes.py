@@ -3,12 +3,14 @@ import os
 import uuid
 import datetime
 import glob
-from flask import Blueprint, current_app, render_template, request, redirect, url_for, send_from_directory, flash
+from flask import Blueprint, current_app, render_template, request, redirect, url_for, send_from_directory, flash, jsonify
 from flask_login import login_user, logout_user, login_required, current_user
 from werkzeug.utils import secure_filename
 import subprocess
 import sys
 import shlex
+import joblib
+import numpy as np
 
 main_bp = Blueprint('main', __name__)
 
@@ -443,5 +445,68 @@ def serve_external_html(category, filename):
         flash('File not found.', 'danger')
         return redirect(url_for('main.r_powerbi_list'))
     return send_from_directory(base, filename)
+
+# RPC Prediction API endpoint
+@main_bp.route('/predict/rpc', methods=['GET', 'POST'])
+@login_required
+def rpc_predict():
+    """RPC (Right Party Contact) prediction using XGBoost model"""
+    if request.method == 'GET':
+        return render_template('rpc_predict.html')
+    
+    try:
+        # Load the trained pipeline
+        pipeline_path = os.path.join(os.getcwd(), 'artifact_rpc_model', 'rpc_pipeline.joblib')
+        if not os.path.exists(pipeline_path):
+            flash('RPC model not found. Please train the model first.', 'danger')
+            return render_template('rpc_predict.html', error='Model not found')
+        
+        pipeline = joblib.load(pipeline_path)
+        
+        # Handle both JSON API calls and form submissions
+        if request.is_json:
+            data = request.get_json()
+            instances = data.get('instances', [])
+        else:
+            # Form submission
+            avg_payment_delay = float(request.form.get('avg_payment_delay', 0))
+            payment_ratio = float(request.form.get('payment_ratio', 0))
+            prior_contact_rate = float(request.form.get('prior_contact_rate', 0))
+            instances = [[avg_payment_delay, payment_ratio, prior_contact_rate]]
+        
+        if not instances:
+            if request.is_json:
+                return jsonify({'error': 'No instances provided'}), 400
+            flash('Please provide all required values.', 'danger')
+            return render_template('rpc_predict.html', error='Missing values')
+        
+        # Make predictions
+        data_array = np.array(instances)
+        probabilities = pipeline.predict_proba(data_array)[:, 1].tolist()
+        predictions = (np.array(probabilities) >= 0.5).astype(int).tolist()
+        
+        if request.is_json:
+            return jsonify({
+                'probability': probabilities,
+                'predicted': predictions
+            })
+        else:
+            # Form submission - show results
+            results = []
+            for i, (prob, pred) in enumerate(zip(probabilities, predictions)):
+                results.append({
+                    'input': instances[i],
+                    'probability': prob,
+                    'prediction': 'Yes' if pred == 1 else 'No',
+                    'confidence': prob if pred == 1 else (1 - prob)
+                })
+            return render_template('rpc_predict.html', results=results)
+            
+    except Exception as e:
+        current_app.logger.error(f"RPC prediction error: {e}")
+        if request.is_json:
+            return jsonify({'error': str(e)}), 500
+        flash(f'Prediction failed: {str(e)}', 'danger')
+        return render_template('rpc_predict.html', error=str(e))
 
 # Upload route removed; profile image is now sourced from Image/ directory.

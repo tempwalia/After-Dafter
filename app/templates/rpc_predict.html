@@ -1,0 +1,146 @@
+{% extends "base.html" %}
+
+{% block title %}RPC Prediction - Right Party Contact{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="card">
+                <div class="card-header">
+                    <h3><i class="fas fa-phone-alt"></i> RPC Prediction - Right Party Contact</h3>
+                    <p class="text-muted mb-0">Predict the likelihood of reaching the right party for contact attempts</p>
+                </div>
+                <div class="card-body">
+                    {% if error %}
+                        <div class="alert alert-danger">
+                            <i class="fas fa-exclamation-triangle"></i> {{ error }}
+                        </div>
+                    {% endif %}
+
+                    <form method="POST" class="mb-4">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="avg_payment_delay">
+                                        <i class="fas fa-calendar-times"></i> Average Payment Delay (days)
+                                    </label>
+                                    <input type="number" 
+                                           class="form-control" 
+                                           id="avg_payment_delay" 
+                                           name="avg_payment_delay" 
+                                           step="0.01"
+                                           placeholder="e.g., 15.5"
+                                           required>
+                                    <small class="form-text text-muted">Days late on payments (0-365)</small>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="payment_ratio">
+                                        <i class="fas fa-percentage"></i> Payment Ratio
+                                    </label>
+                                    <input type="number" 
+                                           class="form-control" 
+                                           id="payment_ratio" 
+                                           name="payment_ratio" 
+                                           step="0.01"
+                                           min="0"
+                                           max="1"
+                                           placeholder="e.g., 0.75"
+                                           required>
+                                    <small class="form-text text-muted">Ratio of payments made (0.0-1.0)</small>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="prior_contact_rate">
+                                        <i class="fas fa-phone"></i> Prior Contact Rate
+                                    </label>
+                                    <input type="number" 
+                                           class="form-control" 
+                                           id="prior_contact_rate" 
+                                           name="prior_contact_rate" 
+                                           step="0.01"
+                                           min="0"
+                                           max="1"
+                                           placeholder="e.g., 0.30"
+                                           required>
+                                    <small class="form-text text-muted">Success rate of prior contacts (0.0-1.0)</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="text-center">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="fas fa-magic"></i> Predict RPC
+                            </button>
+                        </div>
+                    </form>
+
+                    {% if results %}
+                        <hr>
+                        <h4><i class="fas fa-chart-line"></i> Prediction Results</h4>
+                        {% for result in results %}
+                            <div class="card mb-3 {% if result.prediction == 'Yes' %}border-success{% else %}border-warning{% endif %}">
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <h5>Input Values:</h5>
+                                            <ul class="list-unstyled">
+                                                <li><strong>Payment Delay:</strong> {{ "%.2f"|format(result.input[0]) }} days</li>
+                                                <li><strong>Payment Ratio:</strong> {{ "%.2f"|format(result.input[1]) }}</li>
+                                                <li><strong>Contact Rate:</strong> {{ "%.2f"|format(result.input[2]) }}</li>
+                                            </ul>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <h5>Prediction:</h5>
+                                            <div class="text-center">
+                                                <span class="badge {% if result.prediction == 'Yes' %}badge-success{% else %}badge-warning{% endif %} p-3" style="font-size: 1.2em;">
+                                                    {% if result.prediction == 'Yes' %}
+                                                        <i class="fas fa-check-circle"></i> Right Party Contact: YES
+                                                    {% else %}
+                                                        <i class="fas fa-times-circle"></i> Right Party Contact: NO
+                                                    {% endif %}
+                                                </span>
+                                                <div class="mt-2">
+                                                    <strong>Confidence:</strong> {{ "%.1f"|format(result.confidence * 100) }}%
+                                                </div>
+                                                <div class="mt-1">
+                                                    <small class="text-muted">Probability: {{ "%.3f"|format(result.probability) }}</small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+
+                    <hr>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h5><i class="fas fa-info-circle"></i> About RPC Prediction</h5>
+                            <p>This model predicts the likelihood of reaching the right party contact based on:</p>
+                            <ul>
+                                <li><strong>Payment Delay:</strong> Historical payment lateness</li>
+                                <li><strong>Payment Ratio:</strong> Proportion of payments made</li>
+                                <li><strong>Contact Rate:</strong> Success rate of previous contact attempts</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <h5><i class="fas fa-code"></i> API Usage</h5>
+                            <p>For programmatic access, POST to <code>/predict/rpc</code> with JSON:</p>
+                            <pre class="bg-light p-2"><code>{
+  "instances": [
+    [15.5, 0.75, 0.30]
+  ]
+}</code></pre>
+                            <small class="text-muted">Returns probability and binary prediction (0/1)</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

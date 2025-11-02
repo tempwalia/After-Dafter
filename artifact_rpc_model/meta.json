@@ -1,0 +1,21 @@
+{
+  "features": ["avg_payment_delay", "payment_ratio", "prior_contact_rate"],
+  "model_info": {
+    "type": "XGBoost Classifier",
+    "preprocessing": "SimpleImputer + StandardScaler",
+    "framework": "scikit-learn pipeline"
+  },
+  "description": "RPC (Right Party Contact) prediction model trained on synthetic data with 3 key features",
+  "created": "2025-11-02",
+  "usage": {
+    "web_ui": "/predict/rpc",
+    "api_endpoint": "POST /predict/rpc with JSON payload",
+    "input_format": {
+      "instances": "[[avg_payment_delay, payment_ratio, prior_contact_rate]]"
+    },
+    "output_format": {
+      "probability": "[0.0 to 1.0 range]",
+      "predicted": "[0 or 1]"
+    }
+  }
+}
