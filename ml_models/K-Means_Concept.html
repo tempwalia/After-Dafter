@@ -7588,8 +7588,7 @@ to group the data into a few cohesive “clusters”.</p>
 </ul>
 </li>
 </ul>
-<p>You will implement the two phases of the K-means algorithm separately
-in the next sections.</p>
+<p>two phases of the K-means algorithm separately next .</p>
 <ul>
 <li>You will start by completing <code>find_closest_centroid</code> and then proceed to complete <code>compute_centroids</code>.</li>
 </ul>
@@ -7714,8 +7713,7 @@ in the next sections.</p>
 <h3 id="1.2-Computing-centroid-means">1.2 Computing centroid means<a class="anchor-link" href="#1.2-Computing-centroid-means">¶</a></h3><p>Given assignments of every point to a centroid, the second phase of the
 algorithm recomputes, for each centroid, the mean of the points that
 were assigned to it.</p>
-<h3 id="Task-2">Task 2<a class="anchor-link" href="#Task-2">¶</a></h3><p>Please complete the <code>compute_centroids</code> below to recompute the value for each centroid.</p>
-<p>Specifically, for every centroid $\mu_k$ we set:
+<p>For every centroid $\mu_k$ we set:
 $$
 \mu_k \;=\; \frac{1}{\lvert C_k \rvert} \sum_{i \in C_k} x^{(i)},\qquad k \in \{0,\dots,K-1\}
 $$</p>
@@ -7728,7 +7726,7 @@ $$</p>
 $$
 \mu_2 \;=\; \tfrac{1}{2}\bigl(x^{(3)} + x^{(5)}\bigr).
 $$</p>
-<p>Plain-text fallback (if math doesn’t render):</p>
+<p>(if math doesn’t render):</p>
 <ul>
 <li>mu_k = (1 / |C_k|) * sum_{i in C_k} x^(i)</li>
 <li>Example: mu_2 = (x^(3) + x^(5)) / 2</li>
